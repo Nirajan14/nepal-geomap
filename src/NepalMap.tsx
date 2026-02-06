@@ -42,7 +42,7 @@ export default function NepalMap() {
   );
 
   // ----------------------------
-  // ✅ MASK OUTSIDE NEPAL
+  // MASK OUTSIDE NEPAL
   // ----------------------------
   const nepalMask: any = {
     type: "Feature",
@@ -148,6 +148,13 @@ export default function NepalMap() {
     layer.bindPopup(`<strong>${name}</strong>`);
   };
 
+  const provinceLegend = provincesData.features.map((feature: any) => {
+    const name = getProvinceName(feature.properties);
+    const code = feature?.properties?.province_code || feature?.properties?.PROVINCE || "1";
+    const color = provinceColors[(parseInt(code, 10) - 1) % provinceColors.length];
+    return { name, color };
+  });
+
   // ----------------------------
   // Render
   // ----------------------------
@@ -168,7 +175,7 @@ export default function NepalMap() {
         {/* Base Tiles */}
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* ✅ White Mask Outside Nepal */}
+        {/* White Mask Outside Nepal */}
         <GeoJSON
           data={nepalMask}
           style={{
@@ -222,6 +229,38 @@ export default function NepalMap() {
           ? "Hide Municipalities"
           : "Show Municipalities"}
       </button>
+      {/* Province Legend */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 20,
+          left: 20,
+          zIndex: 1000,
+          background: "white",
+          padding: "10px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+          maxWidth: "200px",
+        }}
+      >
+        <h4 style={{ margin: "0 0 8px 0" }}>Provinces</h4>
+        {provinceLegend.map((p, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", marginBottom: 4 }}>
+            <span
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor: p.color,
+                display: "inline-block",
+                marginRight: 8,
+                borderRadius: 4,
+              }}
+            ></span>
+            <span>{p.name}</span>
+          </div>
+        ))}
+      </div>
+
     </div>
   );
 }
